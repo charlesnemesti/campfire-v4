@@ -1,46 +1,43 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useAccount, useReadContract } from "wagmi";
 import { useFireIntensity } from "@/hooks/useFireIntensity";
+import { useFireAudio } from "@/hooks/useFireAudio";
 import { ClaimButton } from "@/components/ClaimButton";
 import campfireTokenAbi from "@/lib/abis/CampfireToken.json";
 import { CONTRACTS, isContractDeployed } from "@/lib/config";
-
-type Particle = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;
-  maxLife: number;
-  size: number;
-  hue: number;
-};
+import {
+  createParticlePool,
+  renderFireFrame,
+  type FireParticle,
+} from "@/lib/fire/renderFire";
 
 function StaticFlame({ health }: { health: number }) {
   const opacity = 0.3 + (health / 100) * 0.7;
 
   return (
     <div
-      className="flex h-full min-h-[280px] items-end justify-center pb-8"
+      className="flex h-full min-h-[360px] items-end justify-center pb-10"
       aria-hidden="true"
     >
       <svg
-        width="120"
-        height="160"
-        viewBox="0 0 120 160"
+        width="140"
+        height="180"
+        viewBox="0 0 140 180"
         fill="none"
         style={{ opacity }}
       >
-        <ellipse cx="60" cy="150" rx="50" ry="10" fill="#8b2500" opacity="0.5" />
+        <ellipse cx="70" cy="168" rx="55" ry="10" fill="#3d2010" opacity="0.8" />
+        <rect x="20" y="155" width="90" height="12" rx="4" fill="#5c3317" />
+        <rect x="35" y="163" width="70" height="10" rx="3" fill="#4a2812" />
         <path
-          d="M60 20C60 20 25 70 25 110C25 135 40 150 60 150C80 150 95 135 95 110C95 70 60 20 60 20Z"
+          d="M70 15C70 15 22 75 22 120C22 148 42 168 70 168C98 168 118 148 118 120C118 75 70 15 70 15Z"
           fill="#ff4500"
         />
         <path
-          d="M60 55C60 55 42 90 42 115C42 128 50 138 60 138C70 138 78 128 78 115C78 90 60 55 60 55Z"
+          d="M70 50C70 50 48 95 48 122C48 138 58 152 70 152C82 152 92 138 92 122C92 95 70 50 70 50Z"
           fill="#ffd166"
         />
       </svg>
@@ -48,13 +45,37 @@ function StaticFlame({ health }: { health: number }) {
   );
 }
 
+function SoundToggle({
+  enabled,
+  onToggle,
+}: {
+  enabled: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm transition hover:border-fire-orange hover:text-fire-gold"
+      aria-pressed={enabled}
+      aria-label={enabled ? "Mute campfire sound" : "Enable campfire sound"}
+    >
+      {enabled ? "Sound on" : "Sound off"}
+    </button>
+  );
+}
+
 export function FireSimulator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
+  const particlesRef = useRef<FireParticle[]>(createParticlePool());
   const frameRef = useRef<number>(0);
+  const timeRef = useRef(0);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const { volumePerHour, health, phaseLabel } = useFireIntensity();
   const { address, isConnected } = useAccount();
   const tokenDeployed = isContractDeployed(CONTRACTS.token);
+
+  useFireAudio({ health, enabled: soundEnabled });
 
   const { data: balanceRaw } = useReadContract({
     address: CONTRACTS.token,
@@ -94,68 +115,17 @@ export function FireSimulator() {
     resize();
     window.addEventListener("resize", resize);
 
-    const spawnParticle = (width: number, height: number) => {
-      const spread = (health / 100) * 40 * balanceMultiplier;
-      const intensity = health / 100;
-
-      particlesRef.current.push({
-        x: width / 2 + (Math.random() - 0.5) * spread,
-        y: height - 20,
-        vx: (Math.random() - 0.5) * 1.2 * balanceMultiplier,
-        vy: -(1.5 + Math.random() * 2.5) * (0.5 + intensity),
-        life: 0,
-        maxLife: 40 + Math.random() * 50 * intensity,
-        size: (2 + Math.random() * 4) * (0.6 + intensity * 0.8),
-        hue: 20 + Math.random() * 30,
-      });
-    };
-
     const animate = () => {
       const rect = canvas.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
+      timeRef.current += 1;
 
-      ctx.clearRect(0, 0, width, height);
-
-      const gradient = ctx.createLinearGradient(0, height, 0, 0);
-      gradient.addColorStop(0, "rgba(139, 37, 0, 0.15)");
-      gradient.addColorStop(0.5, "rgba(255, 69, 0, 0.05)");
-      gradient.addColorStop(1, "transparent");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-
-      const spawnRate = Math.floor((health / 100) * 4 * balanceMultiplier) + 1;
-      for (let i = 0; i < spawnRate; i++) {
-        if (particlesRef.current.length < 120) {
-          spawnParticle(width, height);
-        }
-      }
-
-      particlesRef.current = particlesRef.current.filter((particle) => {
-        particle.life += 1;
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.vy -= 0.02;
-        particle.vx *= 0.99;
-
-        const lifeRatio = 1 - particle.life / particle.maxLife;
-        if (lifeRatio <= 0) return false;
-
-        const alpha = lifeRatio * (health / 100);
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * lifeRatio, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${particle.hue}, 100%, 55%, ${alpha})`;
-        ctx.fill();
-
-        return true;
+      renderFireFrame(ctx, particlesRef.current, {
+        width: rect.width,
+        height: rect.height,
+        health,
+        spreadMultiplier: balanceMultiplier,
+        time: timeRef.current,
       });
-
-      if (health > 15) {
-        ctx.beginPath();
-        ctx.ellipse(width / 2, height - 8, 60 * balanceMultiplier, 8, 0, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 107, 43, ${(health / 100) * 0.4})`;
-        ctx.fill();
-      }
 
       frameRef.current = requestAnimationFrame(animate);
     };
@@ -165,10 +135,11 @@ export function FireSimulator() {
     return () => {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(frameRef.current);
-      particlesRef.current = [];
+      particlesRef.current = createParticlePool();
     };
   }, [health, balanceMultiplier]);
 
+  const glowOpacity = 0.15 + (health / 100) * 0.35;
   const claimsCount = "—";
 
   return (
@@ -191,20 +162,33 @@ export function FireSimulator() {
       </motion.div>
 
       <motion.div
-        className="section-card mt-10 overflow-hidden fire-glow"
+        className="section-card relative mt-10 overflow-hidden fire-glow"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.5 }}
       >
+        <div
+          className="pointer-events-none absolute inset-0 transition-opacity duration-1000"
+          style={{
+            background: `radial-gradient(ellipse 60% 40% at 50% 85%, rgba(255, 107, 43, ${glowOpacity}), transparent 70%)`,
+          }}
+          aria-hidden="true"
+        />
+
         <div className="flex flex-col lg:flex-row">
-          <div className="relative min-h-[320px] flex-1 bg-gradient-to-t from-fire-ember/20 to-transparent">
+          <div className="relative min-h-[360px] flex-1 bg-gradient-to-t from-[#1a0a04] via-transparent to-transparent">
             <div className="absolute left-4 top-4 z-10">
               <p className="stat-label">CampfireV4</p>
               <p className="font-display text-xl font-semibold text-fire-orange">
                 {phaseLabel}
               </p>
             </div>
+
+            <SoundToggle
+              enabled={soundEnabled}
+              onToggle={() => setSoundEnabled((prev) => !prev)}
+            />
 
             <canvas
               ref={canvasRef}
@@ -216,11 +200,11 @@ export function FireSimulator() {
             </div>
           </div>
 
-          <div className="flex w-full flex-col justify-between border-t border-border p-6 lg:w-72 lg:border-l lg:border-t-0">
+          <div className="relative z-10 flex w-full flex-col justify-between border-t border-border bg-background-elevated/40 p-6 backdrop-blur-sm lg:w-72 lg:border-l lg:border-t-0">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
               <div>
                 <p className="stat-label">VOL/H</p>
-                <p className="text-2xl font-semibold">
+                <p className="text-2xl font-semibold tabular-nums">
                   {volumePerHour.toFixed(1)}
                 </p>
               </div>
@@ -233,7 +217,7 @@ export function FireSimulator() {
                       style={{ width: `${health}%` }}
                     />
                   </div>
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-medium tabular-nums">
                     {health.toFixed(0)}%
                   </span>
                 </div>

@@ -85,6 +85,28 @@ npm run build
 npm start
 ```
 
+## Deploy on Vercel
+
+### Option A — GitHub integration (recommended)
+
+1. Push your code to [GitHub](https://github.com/charlesnemesti/campfire-v4)
+2. Go to [vercel.com/new](https://vercel.com/new) and import the `campfire-v4` repo
+3. Add environment variable:
+   - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` = your WalletConnect project ID
+4. Click **Deploy**
+
+Vercel will rebuild on every push to `main`.
+
+### Option B — Vercel CLI
+
+```bash
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+When prompted, link to the existing project or create a new one. Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` in the Vercel dashboard under **Settings → Environment Variables**.
+
 ## Disclaimer
 
 $CampfireV4 is a meme token concept for entertainment. Not financial advice. DYOR. NFA.

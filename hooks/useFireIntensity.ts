@@ -18,8 +18,8 @@ function getPhase(health: number): { phase: FirePhase; label: string } {
   return { phase: "BLAZING", label: "BLAZING" };
 }
 
-function smoothRandomWalk(current: number, min: number, max: number): number {
-  const delta = (Math.random() - 0.48) * 8;
+function smoothRandomWalk(current: number, min: number, max: number, bias = 0) {
+  const delta = (Math.random() - 0.5 + bias) * 10;
   return Math.min(max, Math.max(min, current + delta));
 }
 
@@ -29,9 +29,17 @@ export function useFireIntensity(): FireIntensityState {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setVolumePerHour((current) => smoothRandomWalk(current, 5, 120));
-      setHealth((current) => smoothRandomWalk(current, 8, 95));
-    }, 2000);
+      setVolumePerHour((current) => {
+        const next = smoothRandomWalk(current, 3, 140, 0.02);
+        setHealth((prevHealth) => {
+          const target = Math.min(98, 12 + (next / 140) * 88);
+          const drift = (target - prevHealth) * 0.25;
+          const noise = (Math.random() - 0.5) * 4;
+          return Math.min(98, Math.max(5, prevHealth + drift + noise));
+        });
+        return next;
+      });
+    }, 1800);
 
     return () => clearInterval(interval);
   }, []);

@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CampfireV4
+
+A meme token landing site with a live fire simulator, inspired by [PendulumV4](https://www.pendulumv4.xyz/). Built with Next.js, wagmi, and RainbowKit — ready for Ethereum mainnet with placeholder contract addresses.
+
+## Features
+
+- Campfire-themed UI with live canvas particle fire simulator
+- Wallet connect via RainbowKit (Ethereum mainnet)
+- Claim rewards UI wired to hook contract (placeholder until deploy)
+- Four phases: Fueling, Embers, Reigniting, Full Blaze
+- Top earners leaderboard (empty state until on-chain indexing)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment
+
+Copy the example env file and add your WalletConnect project ID:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local`:
+
+```
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
+```
+
+Get a free project ID at [WalletConnect Cloud](https://cloud.walletconnect.com/).
+
+### 3. Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+On Windows PowerShell, if you see an execution policy error for `npm.ps1`, use:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+npm.cmd run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## Post-Deploy Contract Setup
 
-To learn more about Next.js, take a look at the following resources:
+After deploying your ERC20 token and Uniswap v4 hook, update addresses in `lib/config.ts`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```typescript
+export const CONTRACTS = {
+  token: "0xYourTokenAddress",
+  hook: "0xYourHookAddress",
+  pool: "0xYourPoolAddress",
+};
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Replace ABIs in `lib/abis/` with your verified contract ABIs if they differ from the placeholders.
 
-## Deploy on Vercel
+Required hook functions:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `claim()`
+- `pendingReward(address) view returns (uint256)`
+- `accRewardPerShare() view returns (uint256)`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+app/              # Next.js App Router pages and global styles
+components/       # UI sections (Hero, FireSimulator, Leaderboard, etc.)
+hooks/            # useFireIntensity, useRewards
+lib/              # wagmi config, contract addresses, ABIs
+providers/        # Web3Provider (wagmi + RainbowKit)
+```
+
+## Build
+
+```bash
+npm run build
+npm start
+```
+
+## Disclaimer
+
+$CampfireV4 is a meme token concept for entertainment. Not financial advice. DYOR. NFA.

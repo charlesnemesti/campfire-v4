@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0604;
+  --background-elevated: #1a0f08;
+  --foreground: #f5e6d3;
+  --fire-orange: #ff6b2b;
+  --fire-red: #ff4500;
+  --fire-gold: #ffd166;
+  --fire-ember: #8b2500;
+  --muted: #a8907a;
+  --border: rgba(255, 107, 43, 0.2);
+  --glow: rgba(255, 107, 43, 0.35);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-fire-orange: var(--fire-orange);
+  --color-fire-red: var(--fire-red);
+  --color-fire-gold: var(--fire-gold);
+  --color-fire-ember: var(--fire-ember);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: var(--font-dm-sans);
+  --font-family-display: var(--font-fraunces), serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background: radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      rgba(255, 69, 0, 0.15),
+      transparent
+    ),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(255, 107, 43, 0.35);
+  color: var(--foreground);
+}
+
+.fire-glow {
+  box-shadow: 0 0 40px var(--glow), 0 0 80px rgba(255, 69, 0, 0.1);
+}
+
+.text-gradient-fire {
+  background: linear-gradient(135deg, var(--fire-gold), var(--fire-orange), var(--fire-red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-card {
+  background: linear-gradient(
+    180deg,
+    rgba(26, 15, 8, 0.9) 0%,
+    rgba(10, 6, 4, 0.95) 100%
+  );
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

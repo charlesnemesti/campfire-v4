@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Fraunces } from "next/font/google";
+import { PageBackdrop } from "@/components/PageBackdrop";
 import { Web3Provider } from "@/providers/Web3Provider";
 import "./globals.css";
 
@@ -29,8 +30,11 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full">
-        <Web3Provider>{children}</Web3Provider>
+      <body className="relative min-h-full">
+        <PageBackdrop />
+        <div className="relative z-10">
+          <Web3Provider>{children}</Web3Provider>
+        </div>
       </body>
     </html>
   );

@@ -11,7 +11,7 @@ function FlameLogo() {
       viewBox="0 0 28 32"
       fill="none"
       aria-hidden="true"
-      className="text-fire-orange"
+      className="text-fire-orange drop-shadow-[0_0_8px_rgba(255,107,43,0.4)]"
     >
       <path
         d="M14 2C14 2 6 12 6 20C6 26.627 9.373 30 14 30C18.627 30 22 26.627 22 20C22 12 14 2 14 2Z"
@@ -28,7 +28,11 @@ function FlameLogo() {
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/70 backdrop-blur-xl relative">
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-fire-orange/25 to-transparent"
+        aria-hidden="true"
+      />
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <motion.a
           href="#"

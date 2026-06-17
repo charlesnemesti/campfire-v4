@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { SectionWrap } from "@/components/SectionWrap";
 
 const params = [
   { label: "Supply", value: "1,000,000,000" },
@@ -15,30 +16,27 @@ const params = [
 
 export function LaunchParams() {
   return (
-    <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+    <SectionWrap className="!py-10 sm:!py-14">
       <motion.div
         className="section-card fire-glow p-6 sm:p-8"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
       >
         <p className="stat-label mb-6">
           Launch parameters · hardcoded in hook — no admin keys
         </p>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           {params.map((param) => (
-            <div
-              key={param.label}
-              className="rounded-lg border border-border bg-background/50 px-4 py-3"
-            >
-              <p className="stat-label mb-1">{param.label}</p>
+            <div key={param.label} className="param-tile px-4 py-3.5">
+              <p className="stat-label mb-1.5">{param.label}</p>
               <p className="font-medium text-foreground">{param.value}</p>
             </div>
           ))}
         </div>
       </motion.div>
-    </section>
+    </SectionWrap>
   );
 }

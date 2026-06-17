@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { SectionWrap } from "@/components/SectionWrap";
 
 const phases = [
   {
@@ -31,30 +32,31 @@ const phases = [
 
 export function Phases() {
   return (
-    <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <SectionWrap id="how-it-works">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
       >
-        <h2 className="font-display text-3xl font-semibold sm:text-4xl">
-          Four phases of the campfire
-        </h2>
+        <h2 className="section-heading">Four phases of the campfire</h2>
+        <p className="section-subheading">
+          Every swap shapes the arc — from embers to full blaze.
+        </p>
       </motion.div>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
+      <div className="mt-10 grid gap-5 sm:grid-cols-2">
         {phases.map((phase, index) => (
           <motion.article
             key={phase.title}
-            className="section-card p-6"
+            className="section-card section-card-hover p-6"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, delay: index * 0.08 }}
+            transition={{ duration: 0.5, delay: index * 0.07, ease: "easeOut" }}
           >
             <div className="mb-3 flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-fire-orange/20 text-sm font-bold text-fire-orange">
+              <span className="phase-badge flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-fire-orange">
                 {index + 1}
               </span>
               <h3 className="font-display text-xl font-semibold">
@@ -62,12 +64,10 @@ export function Phases() {
               </h3>
             </div>
             <p className="leading-relaxed text-muted">{phase.description}</p>
-            <code className="mt-4 inline-block rounded bg-background px-2 py-1 font-mono text-xs text-fire-gold">
-              {phase.code}
-            </code>
+            <code className="code-chip mt-4 inline-block">{phase.code}</code>
           </motion.article>
         ))}
       </div>
-    </section>
+    </SectionWrap>
   );
 }

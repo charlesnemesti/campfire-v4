@@ -1,7 +1,7 @@
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background-elevated/50">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <footer className="relative border-t border-border/50">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
         <p className="text-center font-display text-lg text-foreground">
           CampfireV4 — the token that never stops burning
         </p>

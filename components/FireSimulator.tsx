@@ -7,6 +7,7 @@ import { useFireIntensity } from "@/hooks/useFireIntensity";
 import { useFireAudio } from "@/hooks/useFireAudio";
 import { ClaimButton } from "@/components/ClaimButton";
 import { MinimalCampfire } from "@/components/MinimalCampfire";
+import { SectionWrap } from "@/components/SectionWrap";
 import { getFirePalette, isBlazingPhase } from "@/lib/fire/palette";
 import { normalizeVolume } from "@/lib/fire/volumeScale";
 import campfireTokenAbi from "@/lib/abis/CampfireToken.json";
@@ -23,7 +24,7 @@ function SoundToggle({
     <button
       type="button"
       onClick={onToggle}
-      className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm transition hover:border-fire-orange hover:text-fire-gold"
+      className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-md transition hover:border-fire-orange/40 hover:text-fire-gold"
       aria-pressed={enabled}
       aria-label={enabled ? "Mute campfire sound" : "Enable campfire sound"}
     >
@@ -61,17 +62,15 @@ export function FireSimulator() {
   const claimsCount = "—";
 
   return (
-    <section id="simulator" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <SectionWrap id="simulator">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
       >
-        <h2 className="font-display text-3xl font-semibold sm:text-4xl">
-          Campfire motion
-        </h2>
-        <p className="mt-4 max-w-3xl leading-relaxed text-muted">
+        <h2 className="section-heading">Campfire motion</h2>
+        <p className="section-subheading">
           Live hook simulator for $CampfireV4. Activity drives the blaze — every
           swap sends fees straight into the accRewardPerShare accumulator.
           Holders claim whenever they want. The more CampfireV4 you hold, the
@@ -84,19 +83,19 @@ export function FireSimulator() {
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
       >
         <div
           className="pointer-events-none absolute inset-0 transition-all duration-1000"
           style={{
-            background: `radial-gradient(ellipse 70% 50% at 50% 85%, ${palette.ambient.replace(/[\d.]+\)$/, `${glowStrength})`)}, transparent 72%)`,
+            background: `radial-gradient(ellipse 75% 55% at 50% 88%, ${palette.glow.replace(/[\d.]+\)$/, `${glowStrength.toFixed(2)})`)}, transparent 75%)`,
           }}
           aria-hidden="true"
         />
 
         <div className="flex flex-col lg:flex-row">
-          <div className="relative min-h-[440px] flex-1 bg-gradient-to-t from-[#1a0a04] via-transparent to-transparent">
-            <div className="absolute left-4 top-4 z-10">
+          <div className="relative min-h-[440px] flex-1 bg-gradient-to-t from-[#140804]/80 via-transparent to-transparent">
+            <div className="absolute left-5 top-5 z-10">
               <p className="stat-label">CampfireV4</p>
               <p
                 className={`font-display text-xl font-semibold transition-colors duration-1000 ${
@@ -128,7 +127,7 @@ export function FireSimulator() {
             </div>
           </div>
 
-          <div className="relative z-10 flex w-full flex-col justify-between border-t border-border bg-background-elevated/40 p-6 backdrop-blur-sm lg:w-72 lg:border-l lg:border-t-0">
+          <div className="relative z-10 flex w-full flex-col justify-between border-t border-border/60 bg-gradient-to-b from-background-elevated/50 to-background/30 p-6 backdrop-blur-md lg:w-72 lg:border-l lg:border-t-0">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
               <div>
                 <p className="stat-label">VOL/H</p>
@@ -138,8 +137,8 @@ export function FireSimulator() {
               </div>
               <div>
                 <p className="stat-label">Health</p>
-                <div className="mt-1 flex items-center gap-2">
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-background">
+                <div className="mt-1.5 flex items-center gap-2">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-background/80">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         blazing
@@ -172,6 +171,6 @@ export function FireSimulator() {
           </div>
         </div>
       </motion.div>
-    </section>
+    </SectionWrap>
   );
 }

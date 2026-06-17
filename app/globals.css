@@ -8,9 +8,13 @@
   --fire-red: #ff4500;
   --fire-gold: #ffd166;
   --fire-ember: #8b2500;
+  --fire-blue: #4da6ff;
+  --fire-cyan: #6ec8ff;
+  --fire-ice: #a8e0ff;
   --muted: #a8907a;
   --border: rgba(255, 107, 43, 0.2);
   --glow: rgba(255, 107, 43, 0.35);
+  --glow-blue: rgba(77, 166, 255, 0.35);
 }
 
 @theme inline {
@@ -21,6 +25,9 @@
   --color-fire-red: var(--fire-red);
   --color-fire-gold: var(--fire-gold);
   --color-fire-ember: var(--fire-ember);
+  --color-fire-blue: var(--fire-blue);
+  --color-fire-cyan: var(--fire-cyan);
+  --color-fire-ice: var(--fire-ice);
   --color-muted: var(--muted);
   --color-border: var(--border);
   --font-sans: var(--font-dm-sans);
